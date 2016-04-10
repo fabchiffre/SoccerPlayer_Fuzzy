@@ -142,17 +142,21 @@ int main( int argc, char* argv[] )
         ballAngle = environment.getBallAngle();
         targetAngle = environment.getTargetAngle( environment.getOwnGoal() );
 
+
         result = defuzzification(ballAngle * 180 / M_PI, targetAngle * 180 / M_PI);
+        
+
+
         result = result * M_PI / 180;
 
         // TODO : Define left and right motor forces...
-        leftMotor  = cos( result ) - sin( result );
-        rightMotor = cos( result ) + sin( result );
+        leftMotor  = (cos( result ) - sin( result )) * COEF_ACTION ;
+        rightMotor = (cos( result ) + sin( result )) * COEF_ACTION;
 
-        cout << "Result : " <<  result * 180 / M_PI << endl;
 
         // Transmite ação do robô ao ambiente. Fica bloqueado até que todos os
         // robôs joguem. Se erro, retorna false (neste exemplo, sai do laco).
+
         if ( ! environment.act( leftMotor, rightMotor ) ) {
             break; // Termina a execução se falha ao agir.
         }
