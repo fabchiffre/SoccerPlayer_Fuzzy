@@ -941,6 +941,32 @@ point<float> clientEnvironm::getOwnGoal( ) const
 }
 //------------------------------------------------------------------------------
 
+// Gets own goal angle
+//------------------------------------------------------------------------------
+float clientEnvironm::getOwnGoalAngle() const
+{
+
+    point<float>    goal;
+    float alpha;
+
+
+
+    if ( ( id < 0 ) || ( id >= robotCount ) || ( robot == NULL ) ) {
+        return 0.0;
+    }
+
+    goal = getOwnGoal();
+
+    alpha = ( goal - robot[id].pos ).angle() - robot[id].angle;
+    if ( alpha > M_PI ) {
+        alpha -= 2 * M_PI;
+    } else if ( alpha < -M_PI ) {
+        alpha += 2 * M_PI;
+    }
+    return alpha;
+}
+//----
+
 // Gets attacking goal's center of the rival.
 //------------------------------------------------------------------------------
 point<float> clientEnvironm::getRivalGoal( ) const

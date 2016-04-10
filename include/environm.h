@@ -207,6 +207,9 @@ public:
     // Gets own attacking goal's center.
     point<float> getOwnGoal( ) const;
 
+    // Gets own goal angle
+    float getOwnGoalAngle() const;
+
     // Gets attacking goal's center of the rival.
     point<float> getRivalGoal( ) const;
 
