@@ -87,7 +87,7 @@ float defuzzification(double ballAngle, double goalAngle)
     }
 
     // Compute the exit fuzzy set and at the same time the exit value.
-    for(int i=0; i<nb_step; ++i) {
+    for(int i=0; i<=nb_step; ++i) {
         int value = START + i*STEP;
 
         coefExit = 0;
