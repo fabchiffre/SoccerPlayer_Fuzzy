@@ -19,6 +19,8 @@
 #define END 180
 #define STEP 15
 
+#define COEF_ACTION 0.4
+
 using namespace std;
 
 const int nb_step = (-START + END) / 15;
@@ -43,7 +45,7 @@ void initFuzzySet()
     goalSet[RIGHT] = new LambdaSet(START, END, -180, -180, 0);
 
     exitSet[LEFT] = new LambdaSet(START, END, 0, 180, 180);
-    exitSet[FRONT] = new LambdaSet(START, END, -180, 0, 180);
+    exitSet[FRONT] = new LambdaSet(START, END, -90, 0, 90);
     exitSet[RIGHT] = new LambdaSet(START, END, -180, -180, 0);
 }
 
