@@ -71,7 +71,6 @@ float defuzzification(double ballAngle, double goalAngle)
     float pertinenceRules[3];
 
     float coefExit;
-    float cutCoef;
     float sumCoef = 0;
     float sumValueCoef = 0;
 
@@ -95,9 +94,9 @@ float defuzzification(double ballAngle, double goalAngle)
         coefExit = 0;
 
         for(int j=0; j<3; ++j) {
-            cutCoef  = min(exitSet[j]->getValue(value) , pertinenceRules[j]);
-            coefExit = max(coefExit, cutCoef);
+            coefExit = max(coefExit, exitSet[j]->getValue(value, pertinenceRules[j]));
         }
+
         sumValueCoef += coefExit*value;
         sumCoef += coefExit;
     }
@@ -144,7 +143,7 @@ int main( int argc, char* argv[] )
 
 
         result = defuzzification(ballAngle * 180 / M_PI, targetAngle * 180 / M_PI);
-        
+
 
 
         result = result * M_PI / 180;
