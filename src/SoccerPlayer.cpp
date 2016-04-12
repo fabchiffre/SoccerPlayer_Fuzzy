@@ -14,16 +14,23 @@
 #define LEFT 0
 #define FRONT 1
 #define RIGHT 2
+#define CLOSE 3
+#define AVERAGE 4
+#define FAR 5
 
-#define START -180
-#define END 180
-#define STEP 15
+#define START_ANGLE -180
+#define END_ANGLE 180
+#define STEP_ANGLE 15
+
+#define START_DIST 0
+#define END_DIST 800
+
 
 #define COEF_ACTION 0.4
 
 using namespace std;
 
-const int nb_step = (-START + END) / 15;
+const int nb_step = (-START_ANGLE + END_ANGLE) / 15;
 
 FuzzySet *ballSet[3], *goalSet[3], *exitSet[3];
 
@@ -32,42 +39,57 @@ FuzzySet *ballSet[3], *goalSet[3], *exitSet[3];
     - Second index corresponds to the goal
     - The resulted index indicates which exitSet to used.
     */
-int rules[3][3];
+int rules_1[3][3];
 
 void initFuzzySet()
 {
-    ballSet[LEFT] = new LambdaSet(START, END, 0, 180, 180);
-    ballSet[FRONT] = new LambdaSet(START, END, -90, 0, 90);
-    ballSet[RIGHT] = new LambdaSet(START, END, -180, -180, 0);
+    ballSet[LEFT] = new LambdaSet(START_ANGLE, END_ANGLE, 0, 180, 180);
+    ballSet[FRONT] = new LambdaSet(START_ANGLE, END_ANGLE, -90, 0, 90);
+    ballSet[RIGHT] = new LambdaSet(START_ANGLE, END_ANGLE, -180, -180, 0);
 
-    goalSet[LEFT] = new LambdaSet(START, END, 0, 180, 180);
-    goalSet[FRONT] = new LambdaSet(START, END, -90, 0, 90);
-    goalSet[RIGHT] = new LambdaSet(START, END, -180, -180, 0);
+    goalSet[LEFT] = new LambdaSet(START_ANGLE, END_ANGLE, 0, 180, 180);
+    goalSet[FRONT] = new LambdaSet(START_ANGLE, END_ANGLE, -90, 0, 90);
+    goalSet[RIGHT] = new LambdaSet(START_ANGLE, END_ANGLE, -180, -180, 0);
 
-    exitSet[LEFT] = new LambdaSet(START, END, 0, 180, 180);
-    exitSet[FRONT] = new LambdaSet(START, END, -90, 0, 90);
-    exitSet[RIGHT] = new LambdaSet(START, END, -180, -180, 0);
+    exitSet[LEFT] = new LambdaSet(START_ANGLE, END_ANGLE, 0, 180, 180);
+    exitSet[FRONT] = new LambdaSet(START_ANGLE, END_ANGLE, -90, 0, 90);
+    exitSet[RIGHT] = new LambdaSet(START_ANGLE, END_ANGLE, -180, -180, 0);
+
 }
 
 void initRules()
 {
     //First index : ball, second : goal
-    rules[LEFT][LEFT] = FRONT;
-    rules[LEFT][FRONT] = LEFT;
-    rules[LEFT][RIGHT] = LEFT;
+    rules_1[LEFT][LEFT] = FRONT;
+    rules_1[LEFT][FRONT] = LEFT;
+    rules_1[LEFT][RIGHT] = LEFT;
 
-    rules[FRONT][LEFT] = RIGHT;
-    rules[FRONT][FRONT] = FRONT;
-    rules[FRONT][RIGHT] = LEFT;
+    rules_1[FRONT][LEFT] = RIGHT;
+    rules_1[FRONT][FRONT] = FRONT;
+    rules_1[FRONT][RIGHT] = LEFT;
 
-    rules[RIGHT][LEFT] = RIGHT;
-    rules[RIGHT][FRONT] = RIGHT;
-    rules[RIGHT][RIGHT] =  FRONT;
+    rules_1[RIGHT][LEFT] = RIGHT;
+    rules_1[RIGHT][FRONT] = RIGHT;
+    rules_1[RIGHT][RIGHT] =  FRONT;
+
+ 
 }
 
-float defuzzification(double ballAngle, double goalAngle)
+void computePertinence(int rules[3][3], float pertinenceRules[], int val1, int val2)
 {
     float valA, valB;
+    for(int i=0; i<3; ++i) {
+        for(int j=0; j<3; ++j) {
+            valA = ballSet[i]->getValue(val1);
+            valB = goalSet[j]->getValue(val2);
+
+            pertinenceRules[rules[i][j]] = max(pertinenceRules[rules[i][j]], min(valA, valB));
+        }
+    }
+}
+
+float defuzzification(double ballAngle, double goalAngle, double distBall)
+{
     float pertinenceRules[3];
 
     float coefExit;
@@ -77,19 +99,12 @@ float defuzzification(double ballAngle, double goalAngle)
     for(int i=0; i<3; ++i)
         pertinenceRules[i] = 0;
 
-    // Compute the degree of pertinence for each rules
-    for(int i=0; i<3; ++i) {
-        for(int j=0; j<3; ++j) {
-            valA = ballSet[i]->getValue(ballAngle);
-            valB = goalSet[j]->getValue(goalAngle);
-
-            pertinenceRules[rules[i][j]] = max(pertinenceRules[rules[i][j]], min(valA, valB));
-        }
-    }
+    computePertinence(rules_1, pertinenceRules, ballAngle, goalAngle);
+   
 
     // Compute the exit fuzzy set and at the same time the exit value.
     for(int i=0; i<=nb_step; ++i) {
-        int value = START + i*STEP;
+        int value = START_ANGLE + i*STEP_ANGLE;
 
         coefExit = 0;
 
@@ -106,7 +121,7 @@ float defuzzification(double ballAngle, double goalAngle)
 int main( int argc, char* argv[] )
 {
 
-    float   ballAngle, targetAngle, leftMotor, rightMotor;
+    float   ballAngle, targetAngle, distBall, leftMotor, rightMotor;
     float   result;
 
     // Declaração do objeto que representa o ambiente.
@@ -140,9 +155,12 @@ int main( int argc, char* argv[] )
         // Exemplos de métodos que podem ser utilizados.
         ballAngle = environment.getBallAngle();
         targetAngle = environment.getTargetAngle( environment.getOwnGoal() );
+        distBall = environment.getDistance();
+
+        cout << distBall << endl;
 
 
-        result = defuzzification(ballAngle * 180 / M_PI, targetAngle * 180 / M_PI);
+        result = defuzzification(ballAngle * 180 / M_PI, targetAngle * 180 / M_PI, distBall);
 
 
 
@@ -156,7 +174,7 @@ int main( int argc, char* argv[] )
         // Transmite ação do robô ao ambiente. Fica bloqueado até que todos os
         // robôs joguem. Se erro, retorna false (neste exemplo, sai do laco).
 
-        if ( ! environment.act( leftMotor, rightMotor ) ) {
+        if ( ! environment.act( leftMotor , rightMotor ) ) {
             break; // Termina a execução se falha ao agir.
         }
     }
