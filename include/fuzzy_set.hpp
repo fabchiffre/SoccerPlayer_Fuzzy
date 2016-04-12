@@ -5,7 +5,7 @@ class FuzzySet
 {
 public:
     virtual ~FuzzySet() = 0;
-    virtual float getValue(int entry) = 0;
+    virtual float getValue(int entry, float value = 1) = 0;
 };
 
 class LambdaSet : public FuzzySet

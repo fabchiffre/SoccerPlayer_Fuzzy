@@ -1,5 +1,7 @@
 #include "fuzzy_set.hpp"
 
+#include <algorithm>
+
 FuzzySet::~FuzzySet()
 {
 
@@ -15,14 +17,18 @@ LambdaSet::~LambdaSet()
 
 }
 
-float LambdaSet::getValue(int entry)
+float LambdaSet::getValue(int entry,float value)
 {
+	float result;
+
     if(entry < alpha_ || entry > gamma_)
-        return 0;
+        result =  0;
     else if(entry > alpha_ && entry <= beta_)
-        return (entry - alpha_) / (float) (beta_ - alpha_);
+        result = (entry - alpha_) / (float) (beta_ - alpha_);
     else if (entry > beta_ && entry <= gamma_)
-        return (gamma_ - entry) / (float) (gamma_- beta_);
+        result =  (gamma_ - entry) / (float) (gamma_- beta_);
     else
-        return 0;
+        result = 0;
+
+    return std::min(result, value);
 }
