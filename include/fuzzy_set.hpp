@@ -32,5 +32,18 @@ private:
 	int alpha_, beta_;
 };
 
+class GammaSet : public FuzzySet
+{
+public:
+	GammaSet(int startRange, int endRange, int alpha, int beta);
+ 	virtual ~GammaSet();
+    virtual float getValue(int entry, float value = 1);
+
+private:
+	int startRange_, endRange_;
+	int alpha_, beta_;
+};
+
+
 
 #endif

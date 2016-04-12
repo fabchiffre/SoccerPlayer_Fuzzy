@@ -54,3 +54,26 @@ float LSet::getValue(int entry, float value)
 		result = 0;
 	return std::min(result, value);
 }
+
+
+GammaSet::GammaSet(int startRange, int endRange, int alpha, int beta): startRange_(startRange), endRange_(endRange), alpha_(alpha), beta_(beta)
+{
+
+}
+
+GammaSet::~GammaSet()
+{
+
+}
+
+float GammaSet::getValue(int entry, float value)
+{	
+	float result;
+	if(entry < alpha_)
+		result = 0;
+	else if(entry>= alpha_ && entry <= beta_)
+		result = (entry - alpha_)/(beta_ - alpha_);
+	else
+		result = 1;
+	return std::min(result, value);
+}
