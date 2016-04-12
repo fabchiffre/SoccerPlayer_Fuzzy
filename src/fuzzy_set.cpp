@@ -7,7 +7,8 @@ FuzzySet::~FuzzySet()
 
 }
 
-LambdaSet::LambdaSet(int startRange, int endRange, int alpha, int beta, int gamma) : startRange_(startRange), endRange_(endRange), alpha_(alpha), beta_(beta), gamma_(gamma)
+LambdaSet::LambdaSet(int startRange, int endRange, 
+	int alpha, int beta, int gamma) : startRange_(startRange), endRange_(endRange), alpha_(alpha), beta_(beta), gamma_(gamma)
 {
 
 }
@@ -19,7 +20,7 @@ LambdaSet::~LambdaSet()
 
 float LambdaSet::getValue(int entry,float value)
 {
-	float result;
+    float result;
 
     if(entry < alpha_ || entry > gamma_)
         result =  0;
@@ -33,7 +34,8 @@ float LambdaSet::getValue(int entry,float value)
     return std::min(result, value);
 }
 
-LSet::LSet(int startRange, int endRange, int alpha, int beta): startRange_(startRange), endRange_(endRange), alpha_(alpha), beta_(beta)
+LSet::LSet(int startRange, int endRange, 
+	int alpha, int beta): startRange_(startRange), endRange_(endRange), alpha_(alpha), beta_(beta)
 {
 
 }
@@ -44,19 +46,20 @@ LSet::~LSet()
 }
 
 float LSet::getValue(int entry, float value)
-{	
-	float result;
-	if(entry < alpha_)
-		result = 1;
-	else if(entry>= alpha_ && entry <= beta_)
-		result = (beta_ - entry)/(beta_ - alpha_);
-	else
-		result = 0;
-	return std::min(result, value);
+{
+    float result;
+    if(entry < alpha_)
+        result = 1;
+    else if(entry>= alpha_ && entry <= beta_)
+        result = (beta_ - entry)/(beta_ - alpha_);
+    else
+        result = 0;
+    return std::min(result, value);
 }
 
 
-GammaSet::GammaSet(int startRange, int endRange, int alpha, int beta): startRange_(startRange), endRange_(endRange), alpha_(alpha), beta_(beta)
+GammaSet::GammaSet(int startRange, int endRange, 
+	int alpha, int beta): startRange_(startRange), endRange_(endRange), alpha_(alpha), beta_(beta)
 {
 
 }
@@ -67,13 +70,40 @@ GammaSet::~GammaSet()
 }
 
 float GammaSet::getValue(int entry, float value)
-{	
-	float result;
-	if(entry < alpha_)
-		result = 0;
-	else if(entry>= alpha_ && entry <= beta_)
-		result = (entry - alpha_)/(beta_ - alpha_);
-	else
-		result = 1;
-	return std::min(result, value);
+{
+    float result;
+    if(entry < alpha_)
+        result = 0;
+    else if(entry>= alpha_ && entry <= beta_)
+        result = (entry - alpha_)/(beta_ - alpha_);
+    else
+        result = 1;
+    return std::min(result, value);
+}
+
+TrapezeSet::TrapezeSet(int startRange, int endRange, 
+	int alpha, int beta, int gamma, int delta): startRange_(startRange), endRange_(endRange), alpha_(alpha), beta_(beta), gamma_(gamma), delta_(delta)
+{
+
+}
+
+TrapezeSet::~TrapezeSet()
+{
+
+}
+
+float TrapezeSet::getValue(int entry, float value)
+{
+    float result;
+    if(entry < alpha_)
+        result = 0;
+    else if(entry>= alpha_ && entry <= beta_)
+        result = (entry - alpha_)/(beta_ - alpha_);
+    else if(entry > beta_ && entry < gamma_)
+        result = 1;
+    else if(entry >= gamma_ && entry < delta_)
+        result = (entry - gamma_) / (gamma_ - delta_);
+    else
+        result = 0;
+    return std::min(result, value);
 }
