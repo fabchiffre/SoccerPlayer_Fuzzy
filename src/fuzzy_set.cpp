@@ -2,13 +2,19 @@
 
 #include <algorithm>
 
+FuzzySet::FuzzySet(int startRange, int endRange) : 
+    startRange_(startRange), endRange_(endRange)
+{
+
+}
+
 FuzzySet::~FuzzySet()
 {
 
 }
 
 LambdaSet::LambdaSet(int startRange, int endRange, 
-	int alpha, int beta, int gamma) : startRange_(startRange), endRange_(endRange), alpha_(alpha), beta_(beta), gamma_(gamma)
+	int alpha, int beta, int gamma) : FuzzySet(startRange, endRange), alpha_(alpha), beta_(beta), gamma_(gamma)
 {
 
 }
@@ -35,7 +41,7 @@ float LambdaSet::getValue(int entry,float value)
 }
 
 LSet::LSet(int startRange, int endRange, 
-	int alpha, int beta): startRange_(startRange), endRange_(endRange), alpha_(alpha), beta_(beta)
+	int alpha, int beta): FuzzySet(startRange, endRange), alpha_(alpha), beta_(beta)
 {
 
 }
@@ -59,7 +65,7 @@ float LSet::getValue(int entry, float value)
 
 
 GammaSet::GammaSet(int startRange, int endRange, 
-	int alpha, int beta): startRange_(startRange), endRange_(endRange), alpha_(alpha), beta_(beta)
+	int alpha, int beta): FuzzySet(startRange, endRange), alpha_(alpha), beta_(beta)
 {
 
 }
@@ -82,7 +88,7 @@ float GammaSet::getValue(int entry, float value)
 }
 
 TrapezeSet::TrapezeSet(int startRange, int endRange, 
-	int alpha, int beta, int gamma, int delta): startRange_(startRange), endRange_(endRange), alpha_(alpha), beta_(beta), gamma_(gamma), delta_(delta)
+	int alpha, int beta, int gamma, int delta): FuzzySet(startRange, endRange), alpha_(alpha), beta_(beta), gamma_(gamma), delta_(delta)
 {
 
 }
