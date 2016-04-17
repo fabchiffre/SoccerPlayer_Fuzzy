@@ -56,8 +56,15 @@ private:
     int alpha_, beta_, gamma_, delta_;
 };
 
-
-
+class USet : public FuzzySet
+{
+public:
+    USet(int startRange, int endRange, int alpha, int beta, int gamma, int delta);
+    virtual ~USet();
+    virtual float getValue(int entry, float value = 1);
+private:
+    int alpha_, beta_, gamma_, delta_;
+};
 
 
 #endif
