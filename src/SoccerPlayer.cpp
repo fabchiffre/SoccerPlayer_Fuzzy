@@ -19,7 +19,7 @@
 
 #define START_ANGLE -180
 #define END_ANGLE 180
-#define STEP_ANGLE 15
+#define STEP_ANGLE 10
 
 #define START_DIST 0
 #define END_DIST 800
@@ -29,7 +29,7 @@
 
 using namespace std;
 
-const int nb_step = (-START_ANGLE + END_ANGLE) / 15;
+const int nb_step = (-START_ANGLE + END_ANGLE) / STEP_ANGLE;
 
 FuzzySet *ballSet[4], *goalSet[3], *exitSet[3];
 
@@ -47,9 +47,6 @@ void initFuzzySet()
     ballSet[FRONT] = new LambdaSet(START_ANGLE, END_ANGLE, -90, 0, 90);
     ballSet[RIGHT] = new LambdaSet(START_ANGLE, END_ANGLE, -180, -90, 0);
     ballSet[BACK] = new USet(START_ANGLE, END_ANGLE, -180, -90, 90, 180);
-    // ballSet[LEFT] = new GammaSet(START_ANGLE, END_ANGLE, 0, 135);
-    // ballSet[FRONT] = new TrapezeSet(START_ANGLE, END_ANGLE, -90, -45, 45, 90);
-    // ballSet[RIGHT] = new LSet(START_ANGLE, END_ANGLE, -135, 0);
 
     goalSet[LEFT] = new LambdaSet(START_ANGLE, END_ANGLE, 0, 180, 180);
     goalSet[FRONT] = new LambdaSet(START_ANGLE, END_ANGLE, -90, 0, 90);
@@ -58,12 +55,6 @@ void initFuzzySet()
     exitSet[LEFT] = new LambdaSet(START_ANGLE, END_ANGLE, 0, 180, 180);
     exitSet[FRONT] = new LambdaSet(START_ANGLE, END_ANGLE, -90, 0, 90);
     exitSet[RIGHT] = new LambdaSet(START_ANGLE, END_ANGLE, -180, -180, 0);
-
-
-
-    // exitSet[LEFT] = new GammaSet(START_ANGLE, END_ANGLE, -180, 135);
-    // exitSet[FRONT] = new TrapezeSet(START_ANGLE, END_ANGLE, -90, -45, 45, 90);
-    // exitSet[RIGHT] = new LSet(START_ANGLE, END_ANGLE, -135, 180);
 }
 
 void initRules()
@@ -84,9 +75,6 @@ void initRules()
     rules_1[BACK][LEFT] = RIGHT;
     rules_1[BACK][FRONT] = RIGHT;
     rules_1[BACK][RIGHT] =  LEFT;
-
-
- 
 }
 
 void computePertinence(int rules[4][3], float pertinenceRules[], int val1, int val2)
