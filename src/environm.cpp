@@ -1120,6 +1120,15 @@ float clientEnvironm::getTargetAngle( point<float> _pos ) const
 }
 //------------------------------------------------------------------------------
 
+
+float clientEnvironm::getGoalDist() const
+{
+     if ( ( id < 0 ) || ( id >= robotCount ) ) {
+        return 0.0;
+    }
+    return ((getOwnGoal() - robot[id].pos ).size())/2 - robotRadius;
+}
+
 // Calculates distance in milimeters to the nearest obstacle for the robot.
 //------------------------------------------------------------------------------
 float clientEnvironm::getCollision( ) const

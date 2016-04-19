@@ -248,6 +248,8 @@ public:
     // the robot.
     float getTargetAngle( point<float> _pos ) const;
 
+    float getGoalDist() const;
+
     // Calculates distance in milimeters to the nearest obstacle for the robot.
     // It is the robot collision potential.
     float getCollision( ) const;
