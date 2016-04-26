@@ -65,20 +65,21 @@ void initFuzzySet()
     ballSet[RIGHT] = new LambdaSet(START_ANGLE, END_ANGLE, -180, -90, 0);
     ballSet[BACK] = new USet(START_ANGLE, END_ANGLE, -180, -90, 90, 180);
 
-    goalSet.resize(3);
-    goalSet[LEFT] = new LambdaSet(START_ANGLE, END_ANGLE, 0, 180, 180);
+    goalSet.resize(4);
+    goalSet[LEFT] = new LambdaSet(START_ANGLE, END_ANGLE, 0, 90, 180);
     goalSet[FRONT] = new LambdaSet(START_ANGLE, END_ANGLE, -90, 0, 90);
-    goalSet[RIGHT] = new LambdaSet(START_ANGLE, END_ANGLE, -180, -180, 0);
+    goalSet[RIGHT] = new LambdaSet(START_ANGLE, END_ANGLE, -180, -90, 0);
+    goalSet[BACK] = new USet(START_ANGLE, END_ANGLE, -180, -90, 90, 180);
 
     ballDistSet.resize(3);
-    ballDistSet[CLOSE] = new LSet(START_DIST, END_DIST,  150, 300);
-    ballDistSet[AVG_DIST] = new TrapezeSet(START_DIST, END_DIST, 150, 300, 400, 550);
-    ballDistSet[FAR] = new GammaSet(START_DIST, END_DIST, 400, 550);
+    ballDistSet[CLOSE] = new LambdaSet(START_DIST, END_DIST,  0, 0, 300);
+    ballDistSet[AVG_DIST] = new LambdaSet(START_DIST, END_DIST, 0, 300, 500);
+    ballDistSet[FAR] = new LambdaSet(START_DIST, END_DIST, 300, END_DIST, END_DIST);
 
     goalDistSet.resize(3);
-    goalDistSet[CLOSE] = new LSet(START_DIST, END_DIST,  150, 200);
-    goalDistSet[AVG_DIST] = new TrapezeSet(START_DIST, END_DIST, 150, 250, 350, 400);
-    goalDistSet[FAR] = new GammaSet(START_DIST, END_DIST, 350, 450);
+    goalDistSet[CLOSE] = new LambdaSet(START_DIST, END_DIST,  0, 0, 300);
+    goalDistSet[AVG_DIST] =new LambdaSet(START_DIST, END_DIST, 150, 300, 450);
+    goalDistSet[FAR] =  new LambdaSet(START_DIST, END_DIST, 300, END_DIST, END_DIST);
 
     speedSet.resize(3);
     speedSet[SLOW] = new LambdaSet(START_SPEED, END_SPEED,0, 0, 50);
@@ -95,38 +96,42 @@ void initRules()
 {
     rulesDirection.resize(4);
     for(int i=0; i<4; ++i)
-        rulesDirection[i].resize(3);
+        rulesDirection[i].resize(4);
 
     //First index : ball, second : goal
     rulesDirection[LEFT][LEFT] = LEFT;
     rulesDirection[LEFT][FRONT] = LEFT;
     rulesDirection[LEFT][RIGHT] = LEFT;
+    rulesDirection[LEFT][BACK] = LEFT;
 
     rulesDirection[FRONT][LEFT] = RIGHT;
     rulesDirection[FRONT][FRONT] = FRONT;
     rulesDirection[FRONT][RIGHT] = LEFT;
+    rulesDirection[FRONT][BACK] = LEFT;
 
     rulesDirection[RIGHT][LEFT] = RIGHT;
     rulesDirection[RIGHT][FRONT] = RIGHT;
     rulesDirection[RIGHT][RIGHT] =  RIGHT;
+    rulesDirection[RIGHT][BACK] = RIGHT;
 
     rulesDirection[BACK][LEFT] = RIGHT;
     rulesDirection[BACK][FRONT] = RIGHT;
     rulesDirection[BACK][RIGHT] =  LEFT;
+    rulesDirection[BACK][BACK] = RIGHT;
 
     rulesSpeed.resize(3);
     for(int i=0; i<3; ++i)
         rulesSpeed[i].resize(3);
 
     rulesSpeed[CLOSE][CLOSE] = SLOW;
-    rulesSpeed[CLOSE][AVG_DIST] = AVG_SPEED;
-    rulesSpeed[CLOSE][FAR] = FAST;
+    rulesSpeed[CLOSE][AVG_DIST] = SLOW;
+    rulesSpeed[CLOSE][FAR] = SLOW;
 
     rulesSpeed[AVG_DIST][CLOSE] = SLOW;
     rulesSpeed[AVG_DIST][AVG_DIST] = AVG_SPEED;
-    rulesSpeed[AVG_DIST][FAR] = FAST;
+    rulesSpeed[AVG_DIST][FAR] = AVG_SPEED;
 
-    rulesSpeed[FAR][CLOSE] = SLOW;
+    rulesSpeed[FAR][CLOSE] = FAST;
     rulesSpeed[FAR][AVG_DIST] = AVG_SPEED;
     rulesSpeed[FAR][FAR] = FAST;
 }
@@ -175,10 +180,10 @@ void defuzzification(double ballAngle, double goalAngle, double distBall, int di
     }
 
     computePertinence(rulesDirection, pertinenceRulesAng, ballSet, ballAngle, goalSet, goalAngle);
-    // computePertinence(rulesSpeed, pertinenceRulesSpeed, ballDistSet, distBall, goalDistSet, distGoal);
+    computePertinence(rulesSpeed, pertinenceRulesSpeed, ballDistSet, distBall, goalDistSet, distGoal);
 
     angExit = computeResult(directionSet, pertinenceRulesAng, START_ANGLE, STEP_ANGLE, nbStepAng);
-    // speedExit = computeResult(speedSet, pertinenceRulesSpeed, START_SPEED, STEP_SPEED, nbStepSpeed);  
+    speedExit = computeResult(speedSet, pertinenceRulesSpeed, START_SPEED, STEP_SPEED, nbStepSpeed);  
 }
 
 int main( int argc, char* argv[] )
@@ -229,9 +234,10 @@ int main( int argc, char* argv[] )
 
         resultAng = resultAng * M_PI / 180;
 
-        // TODO : Define left and right motor forces...
-        leftMotor  = (cos( resultAng ) - sin( resultAng )) * 0.4;
-        rightMotor = (cos( resultAng ) + sin( resultAng )) * 0.4;
+        cout << resultSpeed << endl;
+
+        leftMotor  = (cos( resultAng ) - sin( resultAng )) * (resultSpeed/100);
+        rightMotor = (cos( resultAng ) + sin( resultAng )) * (resultSpeed/100);
 
 
         // Transmite ação do robô ao ambiente. Fica bloqueado até que todos os
